@@ -14,7 +14,7 @@
         body {
             background-color: #0d1117;
             color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             padding: 20px;
             padding-bottom: 100px;
         }
@@ -25,12 +25,21 @@
             text-align: center;
             font-weight: 700;
         }
+        /* ニュースを表示するエリア */
+        #news-container {
+            min-height: 200px;
+        }
         .card {
             background-color: #161b22;
             border: 1px solid #30363d;
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 15px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .card h2 {
             color: #58a6ff;
@@ -39,9 +48,9 @@
         }
         .card p {
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
-        /* ボタンのエリアを最前面に配置する設定 */
+        /* 固定フッターボタン */
         .btn-container {
             position: fixed;
             bottom: 20px;
@@ -49,27 +58,29 @@
             transform: translateX(-50%);
             width: calc(100% - 40px);
             max-width: 400px;
-            z-index: 99999; /* 何があっても一番手前に来る魔法の数字 */
+            z-index: 99999;
             display: flex;
             gap: 10px;
         }
         .btn {
             flex: 1;
-            background-color: #238636;
-            color: #ffffff;
-            border: none;
+            background-color: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
             padding: 15px;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            display: block;
+            transition: all 0.2s;
         }
-        .btn:active {
-            background-color: #2ea043;
-            transform: scale(0.98);
+        /* 選択されているボタンの見た目 */
+        .btn.active {
+            background-color: #238636;
+            color: #ffffff;
+            border-color: #2ea043;
         }
     </style>
 </head>
@@ -77,15 +88,51 @@
 
     <h1>AI & Biz Briefing</h1>
 
-    <div class="card">
-        <h2>最新のAIニュース</h2>
-        <p>ここにAIとビジネスの最新情報が自動で配信されます。デザインの修正が完了しました！</p>
-    </div>
+    <div id="news-container"></div>
 
     <div class="btn-container">
-        <button class="btn" onclick="alert('ボタン1が押されました！')">ボタン 1</button>
-        <button class="btn" onclick="alert('ボタン2が押されました！')">ボタン 2</button>
+        <button id="btn-ai" class="btn active" onclick="switchNews('ai')">🤖 AIニュース</button>
+        <button id="btn-biz" class="btn" onclick="switchNews('biz')">💼 ビジネス</button>
     </div>
 
+    <script>
+        // ニュースのデータ（中身）
+        const newsData = {
+            ai: [
+                { title: "ChatGPTの新機能が公開", desc: "より人間に近い自然な対話が可能になり、ビジネス現場での導入がさらに加速しています。" },
+                { title: "画像生成AIの進化", desc: "デザイン業務の効率化が進む一方、著作権に関する新しいガイドラインの整備が進められています。" }
+            ],
+            biz: [
+                { title: "リモートワークの最新動向", desc: "出社ハイブリッド型を取り入れる企業が増加し、オフィスのあり方が見直されています。" },
+                { title: "注目のスタートアップ企業", desc: "環境問題（サステナビリティ）をテクノロジーで解決する新しい企業が資金調達に成功しました。" }
+            ]
+        };
+
+        // ニュースを画面に表示する命令
+        function switchNews(category) {
+            const container = document.getElementById('news-container');
+            container.innerHTML = ''; // 一度画面をクリア
+
+            // 選んだカテゴリのニュースを1つずつ画面に作る
+            newsData[category].forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<h2>${item.title}</h2><p>${item.desc}</p>`;
+                container.appendChild(card);
+            });
+
+            // ボタンの色を切り替える
+            document.getElementById('btn-ai').classList.remove('active');
+            document.getElementById('btn-biz').classList.remove('active');
+            if (category === 'ai') {
+                document.getElementById('btn-ai').classList.add('active');
+            } else {
+                document.getElementById('btn-biz').classList.add('active');
+            }
+        }
+
+        // 最初に開いたときはAIニュースを表示しておく
+        switchNews('ai');
+    </script>
 </body>
 </html>
